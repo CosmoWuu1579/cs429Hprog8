@@ -4,9 +4,10 @@ module memory (
     input wire [63:0] alu_data,
     input wire [63:0] alu_pointer,
     input wire write,
-    output wire [31:0] instruction,
-    output wire [63:0] address_value
+    output reg [31:0] instruction,
+    output reg [63:0] address_value
 );
+    localparam MEM_SIZE = 524288;
     reg [7:0] bytes [0:MEM_SIZE-1];
     always @(*) begin
         instruction = {bytes[pc], bytes[pc + 1], bytes[pc + 2], bytes[pc + 3]};

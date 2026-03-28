@@ -2,15 +2,16 @@ module register_file (
     input wire clk,
     input wire reset,
     input wire write,
-    input wire [31:0] data_write,
+    input wire [63:0] data_write,
     input wire [4:0] d,
     input wire [4:0] s,
     input wire [4:0] t,
-    output wire [63:0] rd,
-    output wire [63:0] rs,
-    output wire [63:0] rt,
-    output wire [63:0] stack_pointer
+    output reg [63:0] rd,
+    output reg [63:0] rs,
+    output reg [63:0] rt,
+    output reg [63:0] stack_pointer
 );
+    localparam MEM_SIZE = 524288;
     reg [63:0] registers [0:31];
     reg [5:0] i; // index
     always @(*) begin

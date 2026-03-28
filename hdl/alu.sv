@@ -7,13 +7,13 @@ module alu (
     input wire [11:0] L,
     input wire [63:0] memory_value,
     input wire [63:0] pc,
-    output wire [63:0] memory_pointer,
-    output wire memory_write, // decide if you want to write
-    output wire [63:0] memory_data_to_write,
-    output wire ooo_signal,
-    output wire [63:0] ooo_address,
-    output wire [63:0] reg_out_value,
-    output wire reg_write
+    output reg [63:0] memory_pointer,
+    output reg memory_write, // decide if you want to write
+    output reg [63:0] memory_data_to_write,
+    output reg ooo_signal,
+    output reg [63:0] ooo_address,
+    output reg [63:0] reg_out_value,
+    output reg reg_write
 );
     reg [105:0] multf_reg; // used for divison and multiplication
     reg [53:0] addf_reg;
@@ -244,9 +244,9 @@ module alu (
                         reg_out_value[62:52] = 4095;
                         reg_out_value[51:0] = 1;
                     end else if (rt[62:52] == 4095) begin
-                        reg_out_value = {rt[63:52], 0};
+                        reg_out_value = {rt[63:52], 52'b0};
                     end else if (rs[62:52] == 4095) begin
-                        reg_out_value = {rs[63:52], 0};
+                        reg_out_value = {rs[63:52], 52'b0};
                     end
                 end else begin
                     if (rs[62:52] == 0) begin
@@ -322,7 +322,7 @@ module alu (
                             for (i = 51; i >= 0; i--) begin
                                 if (addf_reg[i]) begin
                                     addf_reg = addf_reg << (53-i);
-                                    mantissa_result[51:0] = add_f[52:1];
+                                    mantissa_result[51:0] = addf_reg[52:1];
                                     amount_shifted_1 += 52 - i;
                                     i = -1;
                                 end
@@ -342,7 +342,7 @@ module alu (
                             reg_out_value[62:52] = final_exponent;
                             reg_out_value[51:0] = mantissa_result[53:2];
                         end else if (final_exponent + 51 > amount_shifted_1) begin
-                            mantissa[52] = 1'b1;
+                            mantissa_result[52] = 1'b1;
                             amount_shifted_1 = 1 + amount_shifted_1 - final_exponent;
                             mantissa_result = mantissa_result >> amount_shifted_1;
                             reg_out_value[62:52] = 0;
@@ -378,7 +378,7 @@ module alu (
                             for (i = 51; i >= 0; i--) begin
                                 if (addf_reg[i]) begin
                                     addf_reg = addf_reg << (53-i);
-                                    mantissa_result[51:0] = add_f[52:1];
+                                    mantissa_result[51:0] = addf_reg[52:1];
                                     amount_shifted_1 += 52 - i;
                                     i = -1;
                                 end
@@ -427,9 +427,9 @@ module alu (
                         reg_out_value[62:52] = 4095;
                         reg_out_value[51:0] = 1;
                     end else if (rt[62:52] == 4095) begin
-                        reg_out_value = {~rt[63],rt[62:52], 0};
+                        reg_out_value = {~rt[63], rt[62:52], 52'b0};
                     end else if (rs[62:52] == 4095) begin
-                        reg_out_value = {rs[63:52], 0};
+                        reg_out_value = {rs[63:52], 52'b0};
                     end
                 end else begin
 
@@ -506,7 +506,7 @@ module alu (
                             for (i = 51; i >= 0; i--) begin
                                 if (addf_reg[i]) begin
                                     addf_reg = addf_reg << (53-i);
-                                    mantissa_result[51:0] = add_f[52:1];
+                                    mantissa_result[51:0] = addf_reg[52:1];
                                     amount_shifted_1 += 52 - i;
                                     i = -1;
                                 end
@@ -562,7 +562,7 @@ module alu (
                             for (i = 51; i >= 0; i--) begin
                                 if (addf_reg[i]) begin
                                     addf_reg = addf_reg << (53-i);
-                                    mantissa_result[51:0] = add_f[52:1];
+                                    mantissa_result[51:0] = addf_reg[52:1];
                                     amount_shifted_1 += 52 - i;
                                     i = -1;
                                 end

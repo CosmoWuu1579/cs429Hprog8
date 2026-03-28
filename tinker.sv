@@ -28,7 +28,6 @@ module tinker_core(
     wire [4:0] t;
     
 
-    // always@(posedge clk or posedge reset) begin
     alu u_alu(
     .opcode (opcode),
     .rd (rd_data),
@@ -65,7 +64,7 @@ module tinker_core(
         .pc_address (pc_address)
     );
 
-    memory u_memory(
+    memory memory(
     .clk (clk),
     .pc (pc_address),
     .alu_data (memory_data_to_write),
@@ -75,7 +74,7 @@ module tinker_core(
     .address_value (memory_read_alu)
     );
 
-    register_file u_reg_file(
+    register_file reg_file(
         .clk (clk),
         .reset (reset),
         .write (reg_write),
@@ -89,5 +88,4 @@ module tinker_core(
         .stack_pointer (stack_pointer)
     );
 
-    // end
 endmodule
