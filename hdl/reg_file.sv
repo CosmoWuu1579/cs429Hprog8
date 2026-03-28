@@ -27,6 +27,7 @@ module register_file (
 
     always @(posedge clk) begin
         if (reset) begin
+            for (i = 0; i < 31; i++) registers[i] = 64'b0;
             registers[31] <= MEM_SIZE;
         end else if (write) registers[d] <= data_write;
     end
