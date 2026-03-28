@@ -3,8 +3,11 @@ module instruction_fetch (
     input wire reset,
     input wire ooo_signal,
     input wire [63:0] ooo_address,
-    output reg [63:0] pc
+    output wire [63:0] pc_address
 );
+    reg [63:0] pc;
+    assign pc_address = pc;
+    // TODO double check the above 
     initial begin 
         pc = 64'h2000;
     end 
@@ -16,5 +19,6 @@ module instruction_fetch (
             else pc <= pc + 4;
         end
     end 
+
 
 endmodule
