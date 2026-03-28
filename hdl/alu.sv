@@ -27,12 +27,12 @@ module alu (
     reg [52:0] mantissa_result; 
     reg [2:0] grs_rounding;
     reg carry_1; // first carry from operation
-    reg carry_2; // carry from rounding 
-    reg signed [8:0] i; // for indexing
+    reg carry_2; // carry from rounding
     always @(*) begin
+        integer i; // local variable: not in sensitivity list
 
         multf_reg = 105'b0;
-        addf_reg = 54'b0;   
+        addf_reg = 54'b0;
         float_exponent_1 = 13'b0;
         float_exponent_2 = 13'b0;
         final_exponent = 13'b0;
@@ -44,7 +44,6 @@ module alu (
         grs_rounding = 3'b0;
         carry_1 = 1'b0;
         carry_2 = 1'b0;
-        i = 0;
         case (opcode)
             5'h0: begin
                 memory_data_to_write = 0;
@@ -340,7 +339,7 @@ module alu (
                             // we are chilling!
                             final_exponent -= amount_shifted_1;
                             reg_out_value[62:52] = final_exponent;
-                            reg_out_value[51:0] = mantissa_result[53:2];
+                            reg_out_value[51:0] = mantissa_result[51:0];
                         end else if (final_exponent + 51 > amount_shifted_1) begin
                             mantissa_result[52] = 1'b1;
                             amount_shifted_1 = 1 + amount_shifted_1 - final_exponent;
@@ -396,7 +395,7 @@ module alu (
                             // we are chilling!
                             final_exponent -= amount_shifted_1;
                             reg_out_value[62:52] = final_exponent;
-                            reg_out_value[51:0] = mantissa_result[53:2];
+                            reg_out_value[51:0] = mantissa_result[51:0];
                         end else if (final_exponent + 51 > amount_shifted_1) begin
                             mantissa_result[52] = 1'b1;
                             amount_shifted_1 = 1 + amount_shifted_1 - final_exponent;
@@ -524,7 +523,7 @@ module alu (
                             // we are chilling!
                             final_exponent -= amount_shifted_1;
                             reg_out_value[62:52] = final_exponent;
-                            reg_out_value[51:0] = mantissa_result[53:2];
+                            reg_out_value[51:0] = mantissa_result[51:0];
                         end else if (final_exponent + 51 > amount_shifted_1) begin
                             mantissa_result[52] = 1'b1;
                             amount_shifted_1 = 1 + amount_shifted_1 - final_exponent;
@@ -580,7 +579,7 @@ module alu (
                             // we are chilling!
                             final_exponent -= amount_shifted_1;
                             reg_out_value[62:52] = final_exponent;
-                            reg_out_value[51:0] = mantissa_result[53:2];
+                            reg_out_value[51:0] = mantissa_result[51:0];
                         end else if (final_exponent + 51 > amount_shifted_1) begin
                             mantissa_result[52] = 1'b1;
                             amount_shifted_1 = 1 + amount_shifted_1 - final_exponent;
