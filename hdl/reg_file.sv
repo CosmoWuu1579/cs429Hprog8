@@ -13,7 +13,11 @@ module register_file (
 );
     localparam MEM_SIZE = 524288;
     reg [63:0] registers [0:31];
-    reg [5:0] i; // index
+    integer i;
+    initial begin
+        for (i = 0; i < 31; i++) registers[i] = 64'b0;
+        registers[31] = MEM_SIZE;
+    end
     always @(*) begin
         rd = registers[d];
         rs = registers[s];
@@ -23,9 +27,6 @@ module register_file (
 
     always @(posedge clk) begin
         if (reset) begin
-            for (i = 0; i < 31; i++) begin
-                registers[i] <= 64'b0;
-            end
             registers[31] <= MEM_SIZE;
         end else if (write) registers[d] <= data_write;
     end
