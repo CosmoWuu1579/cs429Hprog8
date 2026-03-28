@@ -8,9 +8,9 @@ module instruction_fetch (
     reg [63:0] pc;
     assign pc_address = pc;
     // TODO double check the above 
-    initial begin 
-        pc = 64'h2000;
-    end 
+    initial begin
+        pc = 64'h0;  // must be different from 0x2000 so reset creates a real transition
+    end
     
     always @(posedge clk) begin 
         if (reset) pc <= 64'h2000;
