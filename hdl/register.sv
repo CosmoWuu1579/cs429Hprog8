@@ -12,6 +12,7 @@ module register_file (
     output wire [63:0] stack_pointer
 );
     reg [63:0] registers [0:31];
+    reg [5:0] i; // index
     always @(*) begin
         rd = registers[d];
         rs = registers[s];
@@ -25,6 +26,6 @@ module register_file (
                 registers[i] <= 64'b0;
             end
             registers[31] <= MEM_SIZE;
-        end else if (write) registers[d] <= data_write
+        end else if (write) registers[d] <= data_write;
     end
 endmodule

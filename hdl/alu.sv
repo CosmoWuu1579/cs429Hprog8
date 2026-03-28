@@ -28,6 +28,7 @@ module alu (
     reg [2:0] grs_rounding;
     reg carry_1; // first carry from operation
     reg carry_2; // carry from rounding 
+    reg [8:0] i; // for indexing
     always @(*) begin
 
         multf_reg = 105'b0;
@@ -43,6 +44,7 @@ module alu (
         grs_rounding = 3'b0;
         carry_1 = 1'b0;
         carry_2 = 1'b0;
+        i = 0;
         case (opcode)
             5'h0: begin
                 memory_data_to_write = 0;
@@ -150,8 +152,8 @@ module alu (
                 memory_pointer = 0;
                 memory_write = 0;
                 ooo_signal = 1;
-                if (rs) ooo_address = rd
-                else ooo_address = pc + 4
+                if (rs) ooo_address = rd;
+                else ooo_address = pc + 4;
                 reg_out_value = 0;
                 reg_write = 0;
             end
@@ -247,7 +249,6 @@ module alu (
                         reg_out_value = {rs[63:52], 0};
                     end
                 end else begin
-
                     if (rs[62:52] == 0) begin
                         float_exponent_1 = 1; // remember that it's 1 because -1022 + 1023
                         for (i = 51; i >= 0; i--) begin
@@ -309,7 +310,7 @@ module alu (
                                 addf_reg = float_value_2 - float_value_1;
                             end
                         end else begin
-                            addf_reg = float_value_1 + float_value_2
+                            addf_reg = float_value_1 + float_value_2;
                         end
                         final_exponent = float_exponent_1;
                         if (addf_reg[53]) begin
@@ -339,7 +340,7 @@ module alu (
                             // we are chilling!
                             final_exponent -= amount_shifted_1;
                             reg_out_value[62:52] = final_exponent;
-                            reg_out_value[51:0] = mantissa_result[53:2]
+                            reg_out_value[51:0] = mantissa_result[53:2];
                         end else if (final_exponent + 51 > amount_shifted_1) begin
                             mantissa[52] = 1'b1;
                             amount_shifted_1 = 1 + amount_shifted_1 - final_exponent;
@@ -349,7 +350,6 @@ module alu (
                         end else begin
                             reg_out_value[62:0] = 0;
                         end
-                    end
                     end else begin
                         // this is the case where we must consider everything 
                         // here, we know that float_value_1 will always be larger, so let's go
@@ -366,7 +366,7 @@ module alu (
                             reg_out_value[63] = 1;
                             addf_reg = float_value_1 - float_value_2;
                         end else begin
-                            addf_reg = float_value_1 + float_value_2
+                            addf_reg = float_value_1 + float_value_2;
                         end
                         final_exponent = float_exponent_1;
                         if (addf_reg[53]) begin
@@ -396,9 +396,9 @@ module alu (
                             // we are chilling!
                             final_exponent -= amount_shifted_1;
                             reg_out_value[62:52] = final_exponent;
-                            reg_out_value[51:0] = mantissa_result[53:2]
+                            reg_out_value[51:0] = mantissa_result[53:2];
                         end else if (final_exponent + 51 > amount_shifted_1) begin
-                            mantissa[52] = 1'b1;
+                            mantissa_result[52] = 1'b1;
                             amount_shifted_1 = 1 + amount_shifted_1 - final_exponent;
                             mantissa_result = mantissa_result >> amount_shifted_1;
                             reg_out_value[62:52] = 0;
@@ -407,6 +407,7 @@ module alu (
                             reg_out_value[62:0] = 0;
                         end
                     end
+                end
                 reg_write = 1;
             end
             5'h15: begin
@@ -416,7 +417,6 @@ module alu (
                 ooo_signal = 0;
                 ooo_address = 0;
                 reg_out_value[63] = 0;
-                rt[63] = ~rt[63];
                 if (rs == 0) reg_out_value = rt;
                 else if (rt == 0) reg_out_value = rs;
                 else if (rt[62:52] == 4095 || rs[62:52] == 4095) begin
@@ -427,7 +427,7 @@ module alu (
                         reg_out_value[62:52] = 4095;
                         reg_out_value[51:0] = 1;
                     end else if (rt[62:52] == 4095) begin
-                        reg_out_value = {rt[63:52], 0};
+                        reg_out_value = {~rt[63],rt[62:52], 0};
                     end else if (rs[62:52] == 4095) begin
                         reg_out_value = {rs[63:52], 0};
                     end
@@ -475,17 +475,17 @@ module alu (
 
                     // now we must case work
                     if (float_exponent_1 + amount_shifted_2 == float_exponent_2 + amount_shifted_1) begin
-                        if (rs[63] && rt[63]) begin
+                        if (rs[63] && !rt[63]) begin
                             reg_out_value[63] = 1;
                             addf_reg = float_value_1 + float_value_2;
-                        end else if (rs[63] && !rt[63]) begin
+                        end else if (rs[63] && rt[63]) begin
                             if (rt[51:0] < rs[51:0]) begin
                                 reg_out_value[63] = 1;
                                 addf_reg = float_value_2 - float_exponent_1;
                             end else begin
                                 addf_reg = float_value_1 - float_value_2;
                             end
-                        end else if (!rs[63] && rt[63]) begin
+                        end else if (!rs[63] && !rt[63]) begin
                             // this means our result will be negative, turn that bad boy on
                             if (rs[51:0] > rt[51:0]) begin
                                 reg_out_value[63] = 1;
@@ -524,9 +524,9 @@ module alu (
                             // we are chilling!
                             final_exponent -= amount_shifted_1;
                             reg_out_value[62:52] = final_exponent;
-                            reg_out_value[51:0] = mantissa_result[53:2]
+                            reg_out_value[51:0] = mantissa_result[53:2];
                         end else if (final_exponent + 51 > amount_shifted_1) begin
-                            mantissa[52] = 1'b1;
+                            mantissa_result[52] = 1'b1;
                             amount_shifted_1 = 1 + amount_shifted_1 - final_exponent;
                             mantissa_result = mantissa_result >> amount_shifted_1;
                             reg_out_value[62:52] = 0;
@@ -534,19 +534,18 @@ module alu (
                         end else begin
                             reg_out_value[62:0] = 0;
                         end
-                    end
                     end else begin
                         // this is the case where we must consider everything 
                         // here, we know that float_value_1 will always be larger, so let's go
                         // we break into 4 cases on what we do, but first, we shit the float_value_2
                         float_value_2 = float_value_2 >> (float_exponent_1 + amount_shifted_2 - float_exponent_2 - amount_shifted_1);
                         // now, we have 4 cases based on the sign 
-                        if (rs[63] && rt[63]) begin
+                        if (rs[63] && !rt[63]) begin
                             reg_out_value[63] = 1;
                             addf_reg = float_value_1 + float_value_2;
-                        end else if (rs[63] && !rt[63]) begin
+                        end else if (rs[63] && rt[63]) begin
                             addf_reg = float_value_1 - float_value_2;
-                        end else if (!rs[63] && rt[63]) begin
+                        end else if (!rs[63] && !rt[63]) begin
                             // this means our result will be negative, turn that bad boy on
                             reg_out_value[63] = 1;
                             addf_reg = float_value_1 - float_value_2;
@@ -581,9 +580,9 @@ module alu (
                             // we are chilling!
                             final_exponent -= amount_shifted_1;
                             reg_out_value[62:52] = final_exponent;
-                            reg_out_value[51:0] = mantissa_result[53:2]
+                            reg_out_value[51:0] = mantissa_result[53:2];
                         end else if (final_exponent + 51 > amount_shifted_1) begin
-                            mantissa[52] = 1'b1;
+                            mantissa_result[52] = 1'b1;
                             amount_shifted_1 = 1 + amount_shifted_1 - final_exponent;
                             mantissa_result = mantissa_result >> amount_shifted_1;
                             reg_out_value[62:52] = 0;
@@ -592,6 +591,7 @@ module alu (
                             reg_out_value[62:0] = 0;
                         end
                     end
+                end
                 reg_write = 1;
             end
             5'h16: begin
@@ -714,7 +714,7 @@ module alu (
                         reg_out_value[51:0] = 52'hf;
                     end else if (rt[62:52] == 4095) begin
                         reg_out_value[62:0] = 0;
-                    end else if (rs[62:52] = 4095) begin
+                    end else if (rs[62:52] == 4095) begin
                         reg_out_value[62:52] = 4095;
                         reg_out_value[51:0] = 0;
                     end

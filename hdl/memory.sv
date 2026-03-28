@@ -1,6 +1,6 @@
 module memory (
     input wire clk,
-    input wire [31:0] pc,
+    input wire [63:0] pc,
     input wire [63:0] alu_data,
     input wire [63:0] alu_pointer,
     input wire write,

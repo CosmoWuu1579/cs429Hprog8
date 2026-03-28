@@ -52,15 +52,15 @@ module tinker_core(
         .L (L_data)
     );
 
-    instruction_fetch (
+    instruction_fetch u_fetch(
         .clk (clk),
         .reset (reset),
         .ooo_signal (ooo_signal),
         .ooo_address (ooo_address),
-        .pc (pc_address)
+        .pc_address (pc_address)
     );
 
-    memory (
+    memory u_memory(
     .clk (clk),
     .pc (pc_address),
     .alu_data (memory_data_to_write),
@@ -70,7 +70,7 @@ module tinker_core(
     .address_value (memory_read_alu)
     );
 
-    module register_file (
+    register_file u_reg_file(
         .clk (clk),
         .reset (reset),
         .write (reg_write),
