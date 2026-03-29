@@ -30,7 +30,7 @@ module alu (
     reg carry_2; // carry from rounding
     always @(*) begin
         integer i; // local variable: not in sensitivity list
-
+        integer found;
         multf_reg = 105'b0;
         addf_reg = 54'b0;
         float_exponent_1 = 13'b0;
@@ -44,6 +44,7 @@ module alu (
         grs_rounding = 3'b0;
         carry_1 = 1'b0;
         carry_2 = 1'b0;
+        found = 0;
         case (opcode)
             5'h0: begin
                 memory_data_to_write = 0;
@@ -251,10 +252,10 @@ module alu (
                     if (rs[62:52] == 0) begin
                         float_exponent_1 = 1; // remember that it's 1 because -1022 + 1023
                         for (i = 51; i >= 0; i--) begin
-                            if (rs[i]) begin
+                            if (rs[i] && !found) begin
                                 amount_shifted_1 = 52 - i;
                                 float_value_1 = rs[52:0] << (52 - i);
-                                i = -1;
+                                found = 1;
                             end
                         end
                     end else begin
@@ -266,15 +267,15 @@ module alu (
                     if (rt[62:52] == 0) begin
                         float_exponent_2 = 1; // remember that it's 1 because -1022 + 1023
                         for (i = 51; i >= 0; i--) begin
-                            if (rt[i]) begin
+                            if (rt[i] && !found) begin
                                 amount_shifted_2 = 52 - i;
                                 float_value_2 = rt[52:0] << (52 - i);
-                                i = -1;
+                                found = 1;
                             end
                         end
                     end else begin
                         float_exponent_2 = rt[62:52];
-                        float_value_2 = {1'b1, rs[51:0]};
+                        float_value_2 = {1'b1, rt[51:0]};
                         amount_shifted_2 = 0;
                     end
 
@@ -435,10 +436,10 @@ module alu (
                     if (rs[62:52] == 0) begin
                         float_exponent_1 = 1; // remember that it's 1 because -1022 + 1023
                         for (i = 51; i >= 0; i--) begin
-                            if (rs[i]) begin
+                            if (rs[i] && !found) begin
                                 amount_shifted_1 = 52 - i;
                                 float_value_1 = rs[52:0] << (52 - i);
-                                i = -1;
+                                found = 1;
                             end
                         end
                     end else begin
@@ -450,15 +451,15 @@ module alu (
                     if (rt[62:52] == 0) begin
                         float_exponent_2 = 1; // remember that it's 1 because -1022 + 1023
                         for (i = 51; i >= 0; i--) begin
-                            if (rt[i]) begin
+                            if (rt[i] && !found) begin
                                 amount_shifted_2 = 52 - i;
                                 float_value_2 = rt[52:0] << (52 - i);
-                                i = -1;
+                                found = 1;
                             end
                         end
                     end else begin
                         float_exponent_2 = rt[62:52];
-                        float_value_2 = {1'b1, rs[51:0]};
+                        float_value_2 = {1'b1, rt[51:0]};
                         amount_shifted_2 = 0;
                     end
 
@@ -599,21 +600,22 @@ module alu (
                 memory_write = 0;
                 ooo_signal = 0;
                 ooo_address = 0;
-                reg_out_value[63] = rs[0] ^ rt[0];
+                reg_out_value[63] = rs[63] ^ rt[63];
                 if (rs == 0 || rt == 0) reg_out_value[62:0] = 63'b0;
                 else if (rs[62:52] == 4095 || rt[62:52] == 4095) begin
                     if (rs[62:52] == 4095 && rs[51:0] != 0) reg_out_value = rs; // NaN value
                     else if (rt[62:52] == 4095 && rt[51:0] != 0) reg_out_value = rt;
                     else reg_out_value[62:52] = 4095;
                 end else begin
+                    // $display("We're in lala land");
                    // check for subnormalized numbers 
                     if (rs[62:52] == 0) begin
                         float_exponent_1 = 1; // remember that it's 1 because -1022 + 1023
                         for (i = 51; i >= 0; i--) begin
-                            if (rs[i]) begin
+                            if (rs[i] && !found) begin
                                 amount_shifted_1 = 52 - i;
                                 float_value_1 = rs[52:0] << (52 - i);
-                                i = -1;
+                                found = 1;
                             end
                         end
                     end else begin
@@ -621,24 +623,28 @@ module alu (
                         float_value_1 = {1'b1, rs[51:0]};
                         amount_shifted_1 = 0;
                     end
-
                     if (rt[62:52] == 0) begin
                         float_exponent_2 = 1; // remember that it's 1 because -1022 + 1023
                         for (i = 51; i >= 0; i--) begin
-                            if (rt[i]) begin
+                            if (rt[i] && !found) begin
                                 amount_shifted_2 = 52 - i;
                                 float_value_2 = rt[52:0] << (52 - i);
-                                i = -1;
+                                found = 1;
                             end
                         end
                     end else begin
                         float_exponent_2 = rt[62:52];
-                        float_value_2 = {1'b1, rs[51:0]};
+                        float_value_2 = {1'b1, rt[51:0]};
                         amount_shifted_2 = 0;
                     end
+                    // $display("My exponents are %d and %d", float_exponent_1, float_exponent_2);
+                    // $display("My shifts are %d and %d", amount_shifted_1, amount_shifted_2);
 
                     // great, now we have the 2 values, let's compute some stuff 
                     multf_reg = float_value_1 * float_value_2;
+                    // $display("value 1: %b", float_value_1);
+                    // $display("value 2: %b", float_value_2);
+                    // $display("My value is now %h", multf_reg);
                     if (multf_reg[105]) begin
                         carry_1 = 1;
                         mantissa_result[51:0] = multf_reg[104:53];
@@ -657,6 +663,8 @@ module alu (
                     else carry_2 = 0;
 
                     final_exponent = float_exponent_1 + float_exponent_2 + carry_1 + carry_2;
+                    // $display("Final exponent: %d", final_exponent);
+                    // $display("Mantissa: %b", mantissa_result);
                     if (final_exponent > 13'd1023 + amount_shifted_1 + amount_shifted_2) begin
                         // we're safe! 
                         // now we just need to make sure it's not too big
@@ -722,10 +730,10 @@ module alu (
                     if (rs[62:52] == 0) begin
                         float_exponent_1 = 1; // remember that it's 1 because -1022 + 1023
                         for (i = 51; i >= 0; i--) begin
-                            if (rs[i]) begin
+                            if (rs[i] && !found) begin
                                 amount_shifted_1 = 52 - i;
                                 float_value_1 = rs[52:0] << (52 - i);
-                                i = -1;
+                                found = 1;
                             end
                         end
                     end else begin
@@ -737,15 +745,15 @@ module alu (
                     if (rt[62:52] == 0) begin
                         float_exponent_2 = 1; // remember that it's 1 because -1022 + 1023
                         for (i = 51; i >= 0; i--) begin
-                            if (rt[i]) begin
+                            if (rt[i] && !found) begin
                                 amount_shifted_2 = 52 - i;
                                 float_value_2 = rt[52:0] << (52 - i);
-                                i = -1;
+                                found = 1;
                             end
                         end
                     end else begin
                         float_exponent_2 = rt[62:52];
-                        float_value_2 = {1'b1, rs[51:0]};
+                        float_value_2 = {1'b1, rt[51:0]};
                         amount_shifted_2 = 0;
                     end
                     multf_reg = {float_value_1, 53'b0};
