@@ -13,7 +13,25 @@ To run the code, run the command below:
 iverilog -g2012 -o vvp/tb_reg_file test/tb_reg_file.sv && vvp vvp/tb_reg_file
 ```
 
-### Complete Tinker Testing Code 
+### Instruction decoder testbench
+To run the code, run the command below:
+```bash
+iverilog -g2012 -o vvp/tb_instruction_decoder test/tb_instruction_decoder.sv && vvp vvp/tb_instruction_decoder
+```
+
+### Memory testbench
+To run the code, run the command below:
+```bash
+iverilog -g2012 -o vvp/tb_memory test/tb_memory.sv && vvp vvp/tb_memory
+```
+
+### Instruction fetch testbench
+To run the code, run the command below:
+```bash
+iverilog -g2012 -o vvp/tb_instruction_fetch test/tb_instruction_fetch.sv && vvp vvp/tb_instruction_fetch
+```
+
+### Complete Tinker Testing Code
 To run the code, run the command below:
 ```bash
 iverilog -g2012 -o vvp/tb_tinker_core test/tb_tinker_core.sv && vvp vvp/tb_tinker_core

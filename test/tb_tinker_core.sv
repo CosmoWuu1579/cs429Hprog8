@@ -125,7 +125,7 @@ module tb_tinker_core;
         //   sub r1, r1, r1  zero out r1 (in case of leftover value)
         //   addi r1, 5
         //   brr 8          skip next instruction
-        //   addi r1, 99     <- should be skipped
+        //   addi r1, 99     should be skipped
         load_instruction(64'h2000, enc(5'h1a, 5'd1, 5'd1, 5'd1, 12'd0));   // sub r1,r1,r1 (zero r1)
         load_instruction(64'h2004, enc(5'h19, 5'd1, 5'd0, 5'd0, 12'd5));   // addi r1, 5
         load_instruction(64'h2008, enc(5'h0a, 5'd0, 5'd0, 5'd0, 12'd8));   
