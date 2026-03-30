@@ -22,14 +22,14 @@ module memory (
     
     always @(posedge clk) begin
         if (write) begin
-            bytes[alu_pointer] <= alu_data[63:56];
-            bytes[alu_pointer + 1] <= alu_data[55:48];
-            bytes[alu_pointer + 2] <= alu_data[47:40];
-            bytes[alu_pointer + 3] <= alu_data[39:32];
-            bytes[alu_pointer + 4] <= alu_data[31:24];
-            bytes[alu_pointer + 5] <= alu_data[23:16];
-            bytes[alu_pointer + 6] <= alu_data[15:8];
-            bytes[alu_pointer + 7] <= alu_data[7:0];
+            bytes[alu_pointer + 7] <= alu_data[63:56];
+            bytes[alu_pointer + 6] <= alu_data[55:48];
+            bytes[alu_pointer + 5] <= alu_data[47:40];
+            bytes[alu_pointer + 4] <= alu_data[39:32];
+            bytes[alu_pointer + 3] <= alu_data[31:24];
+            bytes[alu_pointer + 2] <= alu_data[23:16];
+            bytes[alu_pointer + 1] <= alu_data[15:8];
+            bytes[alu_pointer] <= alu_data[7:0];
         end
     end
 endmodule
