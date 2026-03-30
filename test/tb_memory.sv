@@ -6,12 +6,13 @@ module tb_memory;
     reg [63:0] alu_data;
     reg [63:0] alu_pointer;
     reg        write;
-
+    reg        reset;
     wire [31:0] instruction;
     wire [63:0] address_value;
 
     memory uut (
         .clk          (clk),
+        .reset        (reset),
         .pc           (pc),
         .alu_data     (alu_data),
         .alu_pointer  (alu_pointer),

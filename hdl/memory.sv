@@ -1,5 +1,6 @@
 module memory (
     input wire clk,
+    input wire reset,
     input wire [63:0] pc,
     input wire [63:0] alu_data,
     input wire [63:0] alu_pointer,
@@ -21,7 +22,12 @@ module memory (
     end
     
     always @(posedge clk) begin
-        if (write) begin
+        if (reset) begin
+        // Reset the array
+        for (int i = 0; i < MEM_SIZE; i++) begin
+            bytes[i] <= 8'd0;
+        end
+        end else if (write) begin
             bytes[alu_pointer + 7] <= alu_data[63:56];
             bytes[alu_pointer + 6] <= alu_data[55:48];
             bytes[alu_pointer + 5] <= alu_data[47:40];

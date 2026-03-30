@@ -215,7 +215,6 @@ module alu (
                 ooo_signal = 0;
                 ooo_address = 0;
                 reg_out_value = {rd[63:12], L};
-                // TODO maybe the above is not right?
                 reg_write = 1;
             end
             5'h13: begin
@@ -267,6 +266,8 @@ module alu (
                         amount_shifted_1 = 0;
                     end
 
+                    found = 0; // reset found before rt normalization
+
                     if (rt[62:52] == 0) begin
                         float_exponent_2 = 1; // remember that it's 1 because -1022 + 1023
                         for (i = 51; i >= 0; i--) begin
@@ -283,37 +284,33 @@ module alu (
                     end
 
                     if (float_exponent_1 + amount_shifted_2 < float_exponent_2 + amount_shifted_1) begin
-                        // swap them, use the leetcode method
+                        // swap exponents
                         float_exponent_1 = float_exponent_1 ^ float_exponent_2;
                         float_exponent_2 = float_exponent_1 ^ float_exponent_2;
                         float_exponent_1 = float_exponent_1 ^ float_exponent_2;
+                        // swap shifts
                         amount_shifted_1 = amount_shifted_1 ^ amount_shifted_2;
                         amount_shifted_2 = amount_shifted_1 ^ amount_shifted_2;
                         amount_shifted_1 = amount_shifted_1 ^ amount_shifted_2;
-                    end 
+                        // swap values
+                        float_value_1 = float_value_1 ^ float_value_2;
+                        float_value_2 = float_value_1 ^ float_value_2;
+                        float_value_1 = float_value_1 ^ float_value_2;
+                    end
 
                     // now we must case work
                     if (float_exponent_1 + amount_shifted_2 == float_exponent_2 + amount_shifted_1) begin
-                        if (rs[63] && rt[63]) begin
-                            reg_out_value[63] = 1;
+                        if (rs[63] == rt[63]) begin
+                            reg_out_value[63] = rs[63];
                             addf_reg = float_value_1 + float_value_2;
-                        end else if (rs[63] && !rt[63]) begin
-                            if (rt[51:0] < rs[51:0]) begin
-                                reg_out_value[63] = 1;
-                                addf_reg = float_value_2 - float_exponent_1;
-                            end else begin
-                                addf_reg = float_value_1 - float_value_2;
-                            end
-                        end else if (!rs[63] && rt[63]) begin
-                            // this means our result will be negative, turn that bad boy on
-                            if (rs[51:0] > rt[51:0]) begin
-                                reg_out_value[63] = 1;
+                        end else begin
+                            if (float_value_1 >= float_value_2) begin
+                                reg_out_value[63] = rs[63];
                                 addf_reg = float_value_1 - float_value_2;
                             end else begin
+                                reg_out_value[63] = rt[63];
                                 addf_reg = float_value_2 - float_value_1;
                             end
-                        end else begin
-                            addf_reg = float_value_1 + float_value_2;
                         end
                         final_exponent = float_exponent_1;
                         if (addf_reg[53]) begin

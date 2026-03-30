@@ -1,5 +1,5 @@
 $date
-	Sun Mar 29 19:15:02 2026
+	Mon Mar 30 00:32:05 2026
 $end
 $version
 	Icarus Verilog
@@ -43,6 +43,7 @@ $var wire 5 ; d [4:0] $end
 $var wire 12 < L_data [11:0] $end
 $scope module memory $end
 $var wire 1 ! clk $end
+$var wire 1 " reset $end
 $var wire 1 6 write $end
 $var wire 64 = pc [63:0] $end
 $var wire 64 > alu_pointer [63:0] $end
@@ -496,9 +497,6 @@ b0 x
 #130
 0!
 #135
-b101010 8
-b101010 >
-b101010 d
 b101010 9
 b101010 ?
 b101010 c
@@ -510,6 +508,9 @@ b0 0
 b0 F
 b0 g
 16
+b101010 8
+b101010 >
+b101010 d
 b10011 3
 b10011 T
 b10011 m

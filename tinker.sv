@@ -66,6 +66,7 @@ module tinker_core(
 
     memory memory(
     .clk (clk),
+    .reset (reset),
     .pc (pc_address),
     .alu_data (memory_data_to_write),
     .alu_pointer (memory_pointer),
