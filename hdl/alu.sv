@@ -183,7 +183,7 @@ module alu (
                 memory_pointer = 0;
                 memory_write = 0;
                 ooo_signal = 1;
-                if (rs > rt) ooo_address = rd;
+                if ($signed(rs) > $signed(rt)) ooo_address = rd;
                 else ooo_address = pc + 4;
                 reg_out_value = 0;
                 reg_write = 0;
@@ -215,6 +215,7 @@ module alu (
                 ooo_signal = 0;
                 ooo_address = 0;
                 reg_out_value = {rd[63:12], L};
+                // TODO maybe the above is not right?
                 reg_write = 1;
             end
             5'h13: begin
@@ -869,7 +870,7 @@ module alu (
                 memory_write = 0;
                 ooo_signal = 0;
                 ooo_address = 0;
-                if (rt != 0 ) reg_out_value = rs / rt;
+                if (rt != 0 ) reg_out_value = $signed(rs) / $signed(rt);
                 else reg_out_value = 0; 
                 reg_write = 1;
             end
