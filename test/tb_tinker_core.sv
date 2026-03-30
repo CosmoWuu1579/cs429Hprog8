@@ -15,10 +15,10 @@ module tb_tinker_core;
         input [63:0] addr;
         input [31:0] instr;
         begin
-            core.memory.bytes[addr]   = instr[31:24];
-            core.memory.bytes[addr+1] = instr[23:16];
-            core.memory.bytes[addr+2] = instr[15:8];
-            core.memory.bytes[addr+3] = instr[7:0];
+            core.memory.bytes[addr]   = instr[7:0];
+            core.memory.bytes[addr+1] = instr[15:8];
+            core.memory.bytes[addr+2] = instr[23:16];
+            core.memory.bytes[addr+3] = instr[31:24];
         end
     endtask
 
@@ -81,7 +81,7 @@ module tb_tinker_core;
         load_instruction(64'h2008, enc(5'h18, 5'd1, 5'd2, 5'd3, 12'd0));
         load_instruction(64'h200c, enc(5'h0,  5'd0, 5'd0, 5'd0, 12'd0));
 
-        do_reset;          // pc: 0 → 0x2000, registers cleared
+        do_reset;          
         run_cycles(4);     // execute 4 instructions
 
         check64(core.reg_file.registers[2], 64'd10, "r2=10 after ADDI");

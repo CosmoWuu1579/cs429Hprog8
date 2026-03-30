@@ -24,8 +24,6 @@ module tb_memory;
 
     integer pass = 0, fail = 0;
 
-    // The combinational block only re-fires when alu_pointer or pc changes.
-    // After a write, toggle alu_pointer away and back to force a fresh read.
     task force_read;
         begin
             alu_pointer = alu_pointer + 8; #1;
@@ -78,7 +76,7 @@ module tb_memory;
         check64(address_value, 64'hDEADBEEFCAFEBABE, 2);
 
         // Test 3: write an instruction pattern at pc=0x2000 and read via instruction port
-        alu_pointer = 64'h2000; alu_data = 64'hC0DEFACE00000000; write = 1;
+        alu_pointer = 64'h2000; alu_data = 64'h00000000C0DEFACE; write = 1;
         @(posedge clk); #1;
         write = 0;
         // Toggle pc to force instruction output to re-evaluate

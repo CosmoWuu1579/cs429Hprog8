@@ -221,7 +221,7 @@ module alu (
                 memory_data_to_write = rs;
                 memory_pointer[10:0] = L[10:0];
                 memory_pointer[63:11] = {53{L[11]}};
-                memory_pointer += rs;
+                memory_pointer += rd;
                 memory_write = 1;
                 ooo_signal = 0;
                 ooo_address = 0;
