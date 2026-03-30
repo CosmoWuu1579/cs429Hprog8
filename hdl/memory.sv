@@ -23,10 +23,10 @@ module memory (
     
     always @(posedge clk) begin
         if (reset) begin
-        // Reset the array
-        for (int i = 0; i < MEM_SIZE; i++) begin
-            bytes[i] <= 8'd0;
-        end
+        // // Reset the array
+        // for (i = 0; i < MEM_SIZE; i++) begin
+        //     bytes[i] <= 8'd0;
+        // end
         end else if (write) begin
             bytes[alu_pointer + 7] <= alu_data[63:56];
             bytes[alu_pointer + 6] <= alu_data[55:48];
