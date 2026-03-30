@@ -15,9 +15,9 @@ module memory (
             bytes[i] = 8'h00;
     end
     always @(pc, alu_pointer, alu_data, write) begin
-        instruction = {bytes[pc], bytes[pc + 1], bytes[pc + 2], bytes[pc + 3]};
-        address_value = {bytes[alu_pointer], bytes[alu_pointer + 1], bytes[alu_pointer + 2], bytes[alu_pointer + 3],
-                bytes[alu_pointer + 4], bytes[alu_pointer + 5], bytes[alu_pointer + 6], bytes[alu_pointer + 7]};
+        instruction = {bytes[pc + 3], bytes[pc + 2], bytes[pc + 1], bytes[pc]};
+        address_value = {bytes[alu_pointer + 7], bytes[alu_pointer + 6], bytes[alu_pointer + 5], bytes[alu_pointer + 4],
+                bytes[alu_pointer + 3], bytes[alu_pointer + 2], bytes[alu_pointer + 1], bytes[alu_pointer]};
     end
     
     always @(posedge clk) begin

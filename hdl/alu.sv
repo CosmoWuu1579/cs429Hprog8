@@ -15,7 +15,8 @@ module alu (
     output reg [63:0] reg_out_value,
     output reg reg_write
 );
-    reg [105:0] multf_reg; // used for divison and multiplication
+    reg [105:0] multf_reg; // used for multiplication
+    reg [108:0] divf_reg;
     reg [53:0] addf_reg;
     reg [12:0] float_exponent_1; // extra bits just in case it's not enough
     reg [12:0] float_exponent_2; 
@@ -32,6 +33,7 @@ module alu (
         integer i; // local variable: not in sensitivity list
         integer found;
         multf_reg = 105'b0;
+        divf_reg = 109'b0;
         addf_reg = 54'b0;
         float_exponent_1 = 13'b0;
         float_exponent_2 = 13'b0;
@@ -756,19 +758,25 @@ module alu (
                         float_value_2 = {1'b1, rt[51:0]};
                         amount_shifted_2 = 0;
                     end
-                    multf_reg = {float_value_1, 53'b0};
-                
+                    $display("My exponents are %d and %d", float_exponent_1, float_exponent_2);
+                    $display("My shifts are %d and %d", amount_shifted_1, amount_shifted_2);
+                    divf_reg = {float_value_1, 56'b0};
+                    $display("value 1: %b", float_value_1);
+                    $display("value 2: %b", float_value_2);
+                    $display("My value is now %b", divf_reg);
                     // great, now we have the 2 values, let's compute some stuff 
                     // this time, carry for carry_1 means a subtraction in our exponent
-                    multf_reg /= float_value_2;
-                    if (multf_reg[105]) begin
+                    divf_reg = divf_reg / float_value_2;
+                    $display("My value is now %b", divf_reg);
+                    if (divf_reg[56]) begin
+                        // no need to do any math
                         carry_1 = 0;
-                        mantissa_result[51:0] = multf_reg[104:53];
-                        grs_rounding[2:0] = multf_reg[52:50];
+                        mantissa_result[51:0] = divf_reg[55:4];
+                        grs_rounding[2:0] = divf_reg[3:1];
                     end else begin
                         carry_1 = 1; // this means our 1 is at the 104 position, unacceptable -> must shift to the left by 1
-                        mantissa_result[51:0] = multf_reg[103:52];
-                        grs_rounding[2:0] = multf_reg[51:49];
+                        mantissa_result[51:0] = divf_reg[54:3];
+                        grs_rounding[2:0] = divf_reg[2:0];
                     end
 
                     if ((grs_rounding > 4) || (mantissa_result[0] && grs_rounding[2])) begin
