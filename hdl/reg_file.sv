@@ -1,6 +1,6 @@
 module register_file (
-    input wire clk,
-    input wire reset,
+    input clk,
+    input reset,
     input wire write,
     input wire [63:0] data_write,
     input wire [4:0] d,
@@ -29,6 +29,7 @@ module register_file (
         if (reset) begin
             for (i = 0; i < 31; i = i + 1) registers[i] <= 64'b0;
             registers[31] <= MEM_SIZE;
-        end else if (write) registers[d] <= 15;
+        end
+        if (write) registers[d] <= 15;
     end
 endmodule
