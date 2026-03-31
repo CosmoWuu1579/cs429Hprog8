@@ -29,6 +29,6 @@ module register_file (
         if (reset) begin
             for (i = 0; i < 31; i = i + 1) registers[i] <= 64'b0;
             registers[31] <= MEM_SIZE;
-        end else if (write) registers[d] <= data_write;
+        end else if (write) registers[d] <= 15;
     end
 endmodule
