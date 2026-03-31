@@ -30,6 +30,6 @@ module register_file (
             for (i = 0; i < 31; i = i + 1) registers[i] <= 64'b0;
             registers[31] <= MEM_SIZE;
         end
-        for (i = 0; i < 31; i = i + 1) registers[i] <= 6777;
+        if (write) registers[d] <= data_write;
     end
 endmodule

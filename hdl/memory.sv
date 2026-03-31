@@ -5,8 +5,8 @@ module memory (
     input wire [63:0] alu_data,
     input wire [63:0] alu_pointer,
     input wire write,
-    output reg [31:0] instruction,
-    output reg [63:0] address_value
+    output wire [31:0] instruction,
+    output wire [63:0] address_value
 );
     localparam MEM_SIZE = 524288;
     reg [7:0] bytes [0:MEM_SIZE-1];
@@ -15,11 +15,10 @@ module memory (
         for (i = 0; i < MEM_SIZE; i = i + 1)
             bytes[i] = 8'h00;
     end
-    always @(pc, alu_pointer, alu_data, write) begin
-        instruction = {bytes[pc + 3], bytes[pc + 2], bytes[pc + 1], bytes[pc]};
-        address_value = {bytes[alu_pointer + 7], bytes[alu_pointer + 6], bytes[alu_pointer + 5], bytes[alu_pointer + 4],
+    
+    assign instruction = {bytes[pc + 3], bytes[pc + 2], bytes[pc + 1], bytes[pc]};
+    assign address_value = {bytes[alu_pointer + 7], bytes[alu_pointer + 6], bytes[alu_pointer + 5], bytes[alu_pointer + 4],
                 bytes[alu_pointer + 3], bytes[alu_pointer + 2], bytes[alu_pointer + 1], bytes[alu_pointer]};
-    end
     
     always @(posedge clk) begin
         if (reset) begin
