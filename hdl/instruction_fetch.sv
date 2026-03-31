@@ -1,6 +1,6 @@
 module instruction_fetch (
-    input wire clk,
-    input wire reset,
+    input clk,
+    input reset,
     input wire ooo_signal,
     input wire [63:0] ooo_address,
     output wire [63:0] pc_address
