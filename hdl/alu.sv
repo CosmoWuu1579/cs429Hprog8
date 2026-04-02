@@ -427,7 +427,7 @@ module alu (
                 reg_out_value[63] = 0;
                 if (rs[62:0] == 0) reg_out_value = {~rt[63], rt[62:0]};
                 // TODO idk if the above is correct
-                else if (rt[62:0] == 0) reg_out_value = {~rs[63], rs[62:0]};
+                else if (rt[62:0] == 0) reg_out_value = rs;
                 else if (rt[62:52] == 11'h7FF || rs[62:52] == 11'h7FF) begin
                     if (rs[62:52] == 11'h7FF && rs[51:0] != 0) reg_out_value = rs; // NaN value
                     else if (rt[62:52] == 11'h7FF && rt[51:0] != 0) reg_out_value = rt;
