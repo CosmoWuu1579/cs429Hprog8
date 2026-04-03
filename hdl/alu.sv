@@ -425,7 +425,10 @@ module alu (
                 ooo_signal = 0;
                 ooo_address = 0;
                 reg_out_value[63] = 0;
-                if (rs[62:0] == 0) reg_out_value = {~rt[63], rt[62:0]};
+                if (rs[62:0] == 0 && rt[62:0] == 0) begin
+                    reg_out_value = rs;
+                end
+                else if (rs[62:0] == 0) reg_out_value = {~rt[63], rt[62:0]};
                 // TODO idk if the above is correct
                 else if (rt[62:0] == 0) reg_out_value = rs;
                 else if (rt[62:52] == 11'h7FF || rs[62:52] == 11'h7FF) begin
