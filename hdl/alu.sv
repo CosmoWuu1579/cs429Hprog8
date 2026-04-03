@@ -426,8 +426,7 @@ module alu (
                 ooo_address = 0;
                 reg_out_value[63] = 0;
                 if (rs[62:0] == 0 && rt[62:0] == 0) begin
-                    if (rs[63] == 0) reg_out_value = 0;
-                    else reg_out_value = rs;
+                    reg_out_value =0;
                 end
                 else if (rs[62:0] == 0) reg_out_value = {~rt[63], rt[62:0]};
                 // TODO idk if the above is correct
